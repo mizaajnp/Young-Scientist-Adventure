@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Young Scientist's Adventure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes bubble {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
+        }
+        .bubble {
+            animation: bubble 1.5s ease-out infinite;
+        }
+        .flask-liquid {
+            transition: height 1s linear;
+        }
+        .scientist-blink {
+            animation: blink 4s infinite;
+        }
+        @keyframes blink {
+            0%, 45%, 55%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .typewriter {
+            overflow: hidden;
+            border-right: .15em solid #4FD1C5;
+            white-space: nowrap;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #4FD1C5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+    <!-- Main Game Container -->
+    <div class="w-full max-w-4xl bg-gray-800 rounded-xl shadow-2xl overflow-hidden border-2 border-teal-400 relative">
+        <!-- Lab Background -->
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-900 to-blue-900 opacity-30"></div>
+        
+        <!-- Header -->
+        <div class="relative z-10 bg-gray-700 p-4 border-b-2 border-teal-400 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-flask text-teal-400 text-2xl"></i>
+                <h1 class="text-2xl font-bold text-teal-300">The Young Scientist's Adventure</h1>
+            </div>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 bg-teal-600 hover:bg-teal-500 rounded-lg transition">
+                    <i class="fas fa-book"></i> Notes
+                </button>
+                <button class="px-3 py-1 bg-purple-600 hover:bg-purple-500 rounded-lg transition">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+        </div>
+        
+        <!-- Game Content -->
+        <div class="relative z-10 p-6 flex flex-col md:flex-row gap-6">
+            <!-- Left Side - Lab Scene -->
+            <div class="w-full md:w-1/2 bg-gray-700 rounded-lg p-4 border-2 border-blue-400 relative overflow-hidden">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <!-- Bubbles -->
+                    <div class="absolute w-full h-full">
+                        <div class="bubble absolute w-4 h-4 bg-blue-400 rounded-full" style="left: 20%; bottom: 10%; animation-delay: 0s;"></div>
+                        <div class="bubble absolute w-3 h-3 bg-blue-300 rounded-full" style="left: 50%; bottom: 15%; animation-delay: 0.5s;"></div>
+                        <div class="bubble absolute w-5 h-5 bg-teal-300 rounded-full" style="left: 70%; bottom: 5%; animation-delay: 1s;"></div>
+                    </div>
+                    
+                    <!-- Lab Door -->
+                    <div class="relative bg-gray-600 w-64 h-80 rounded-lg border-4 border-gray-500 shadow-lg">
+                        <!-- Door Details -->
+                        <div class="absolute top-4 left-4 right-4 bg-gray-500 h-12 rounded-t-lg flex items-center justify-center">
+                            <div class="w-8 h-8 bg-yellow-400 rounded-full animate-pulse"></div>
+                        </div>
+                        <div class="absolute top-20 left-8 right-8 bg-gray-700 h-40 rounded-lg p-4">
+                            <div class="bg-gray-800 h-full rounded flex flex-col items-center justify-center p-2">
+                                <div class="text-xs text-gray-400 mb-2">SECURITY SYSTEM</div>
+                                <div class="w-16 h-16 bg-blue-900 rounded-full mb-2 flex items-center justify-center text-2xl">
+                                    <i class="fas fa-lock text-red-400"></i>
+                                </div>
+                                <div class="text-sm text-center">ENTER CHEMICAL CODE</div>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4 bg-gray-500 h-12 rounded-b-lg"></div>
+                    </div>
+                    
+                    <!-- Scientist Character -->
+                    <div class="absolute bottom-4 left-4">
+                        <div class="relative">
+                            <div class="w-16 h-20 bg-white rounded-t-full flex flex-col items-center">
+                                <!-- Lab Coat -->
+                                <div class="w-full h-4/5 bg-white rounded-t-full border-b-2 border-gray-300"></div>
+                                <!-- Face -->
+                                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-amber-100 rounded-full flex flex-col items-center scientist-blink">
+                                    <!-- Glasses -->
+                                    <div class="absolute top-2 w-full flex justify-center space-x-1">
+                                        <div class="w-4 h-2 bg-blue-200 rounded-full border border-blue-400"></div>
+                                        <div class="w-4 h-2 bg-blue-200 rounded-full border border-blue-400"></div>
+                                    </div>
+                                    <div class="absolute top-3 w-8 h-0.5 bg-gray-400"></div>
+                                    <!-- Eyes -->
+                                    <div class="absolute top-4 w-full flex justify-center space-x-4">
+                                        <div class="w-1 h-1 bg-black rounded-full"></div>
+                                        <div class="w-1 h-1 bg-black rounded-full"></div>
+                                    </div>
+                                    <!-- Mouth -->
+                                    <div class="absolute top-6 w-4 h-1 bg-black rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side - Quiz Interface -->
+            <div class="w-full md:w-1/2 bg-gray-700 rounded-lg p-6 border-2 border-purple-400">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-purple-300 mb-2">Chapter 1: The Laboratory Gate</h2>
+                    <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-teal-400">
+                        <div class="flex items-start">
+                            <div class="text-yellow-300 mr-3 mt-1">
+                                <i class="fas fa-quote-left"></i>
+                            </div>
+                            <div>
+                                <p class="italic text-sm">"Only those who understand the formation of water may enter."</p>
+                                <p class="text-right text-xs text-gray-400 mt-1">— Prof. Marie Curion</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quiz Question -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-teal-300 mb-3">Balance the chemical equation:</h3>
+                    <p class="bg-gray-800 p-4 rounded-lg mb-4 text-center text-xl font-mono">
+                        H₂ + O₂ → H₂O
+                    </p>
+                    <p class="text-sm text-gray-400 mb-4">Select the correct balanced equation for the reaction between hydrogen and oxygen to form water:</p>
+                </div>
+                
+                <!-- Answer Options -->
+                <div class="space-y-3 mb-6" id="answer-options">
+                    <button onclick="checkAnswer('A')" class="w-full bg-gray-800 hover:bg-gray-600 p-3 rounded-lg border border-gray-600 text-left transition flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3">A</span>
+                        <span>H₂ + O₂ → H₂O</span>
+                    </button>
+                    <button onclick="checkAnswer('B')" class="w-full bg-gray-800 hover:bg-gray-600 p-3 rounded-lg border border-gray-600 text-left transition flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3">B</span>
+                        <span>H₂ + O → H₂O</span>
+                    </button>
+                    <button onclick="checkAnswer('C')" class="w-full bg-gray-800 hover:bg-gray-600 p-3 rounded-lg border border-gray-600 text-left transition flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3">C</span>
+                        <span>2H₂ + O₂ → 2H₂O</span>
+                    </button>
+                    <button onclick="checkAnswer('D')" class="w-full bg-gray-800 hover:bg-gray-600 p-3 rounded-lg border border-gray-600 text-left transition flex items-center">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3">D</span>
+                        <span>2H + O₂ → H₂O₂</span>
+                    </button>
+                </div>
+                
+                <!-- Timer Flask -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="relative w-12 h-20 mr-3">
+                            <!-- Flask Glass -->
+                            <div class="absolute inset-0 bg-blue-900 bg-opacity-20 rounded-b-full border-2 border-blue-400"></div>
+                            <!-- Liquid -->
+                            <div id="timer-liquid" class="absolute bottom-0 left-0 right-0 bg-blue-500 rounded-b-full flask-liquid" style="height: 100%;"></div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-400">TIME REMAINING</div>
+                            <div id="timer" class="text-xl font-mono">01:30</div>
+                        </div>
+                    </div>
+                    <button id="hint-btn" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 rounded-lg transition">
+                        <i class="fas fa-lightbulb mr-2"></i>Hint
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="relative z-10 bg-gray-700 p-3 text-center text-sm text-gray-400 border-t-2 border-teal-400">
+            <div class="typewriter">Legendary Laboratory of Professor Marie Curion - Unlock the chemical mysteries...</div>
+        </div>
+        
+        <!-- Modal for Correct Answer -->
+        <div id="correct-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-xl p-6 max-w-sm w-full border-2 border-green-400 relative">
+                <div class="absolute -top-4 -right-4 bg-green-500 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-green-400 mb-3">Success!</h3>
+                <p class="mb-4">You've balanced the equation correctly! The laboratory gate begins to unlock...</p>
+                <div class="flex justify-center">
+                    <button onclick="nextChapter()" class="px-6 py-2 bg-green-600 hover:bg-green-500 rounded-lg transition">
+                        EnterLaboratory <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal for Wrong Answer -->
+        <div id="wrong-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-xl p-6 max-w-sm w-full border-2 border-red-400 relative">
+                <div class="absolute -top-4 -right-4 bg-red-500 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                    <i class="fas fa-times"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-red-400 mb-3">Incorrect!</h3>
+                <p class="mb-4" id="wrong-message">That's not the correct balanced equation. Try again!</p>
+                <div class="flex justify-center">
+                    <button onclick="closeWrongModal()" class="px-6 py-2 bg-red-600 hover:bg-red-500 rounded-lg transition">
+                        Try Again <i class="fas fa-redo ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hint Modal -->
+        <div id="hint-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-xl p-6 max-w-sm w-full border-2 border-yellow-400 relative">
+                <div class="absolute -top-4 -right-4 bg-yellow-500 w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-yellow-400 mb-3">Hint</h3>
+                <p class="mb-4">Remember the Law of Conservation of Mass: atoms are neither created nor destroyed in chemical reactions. Count the atoms on both sides of the equation.</p>
+                <div class="bg-gray-700 p-3 rounded-lg mb-4">
+                    <p class="text-sm font-mono text-center">H₂ + O₂ → H₂O</p>
+                    <p class="text-xs text-gray-400 text-center mt-1">Left side: 2H, 2O | Right side: 2H, 1O</p>
+                </div>
+                <div class="flex justify-center">
+                    <button onclick="closeHintModal()" class="px-6 py-2 bg-yellow-600 hover:bg-yellow-500 rounded-lg transition">
+                        Got It! <i class="fas fa-thumbs-up ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let timeLeft = 90; // 90 seconds
+        let timerInterval;
+        let correctAnswer = 'C';
+        
+        // Start the timer when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            startTimer();
+        });
+        
+        // Timer functions
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                // Update flask liquid
+                const liquidHeight = (timeLeft / 90) * 100;
+                document.getElementById('timer-liquid').style.height = `${liquidHeight}%`;
+                
+                // Change color when time is running low
+                if (timeLeft <= 30) {
+                    document.getElementById('timer-liquid').classList.remove('bg-blue-500');
+                    document.getElementById('timer-liquid').classList.add('bg-red-500');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showWrongAnswer("Time's up! The equation wasn't balanced in time.");
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Answer checking
+        function checkAnswer(selected) {
+            clearInterval(timerInterval);
+            
+            if (selected === correctAnswer) {
+                showCorrectAnswer();
+            } else {
+                let message = "That's not the correct balanced equation. Try again!";
+                if (selected === 'A') message = "The oxygen atoms aren't balanced!";
+                if (selected === 'B') message = "Oxygen is diatomic (O₂), not monatomic!";
+                if (selected === 'D') message = "Hydrogen is diatomic (H₂) and this forms hydrogen peroxide!";
+                
+                showWrongAnswer(message);
+            }
+        }
+        
+        function showCorrectAnswer() {
+            document.getElementById('correct-modal').classList.remove('hidden');
+            // Play success sound
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3');
+            audio.play();
+        }
+        
+        function showWrongAnswer(message) {
+            document.getElementById('wrong-message').textContent = message;
+            document.getElementById('wrong-modal').classList.remove('hidden');
+            // Play error sound
+            const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3');
+            audio.play();
+        }
+        
+        function closeWrongModal() {
+            document.getElementById('wrong-modal').classList.add('hidden');
+            // Reset timer
+            timeLeft = 90;
+            startTimer();
+        }
+        
+        // Hint modal
+        document.getElementById('hint-btn').addEventListener('click', function() {
+            document.getElementById('hint-modal').classList.remove('hidden');
+        });
+        
+        function closeHintModal() {
+            document.getElementById('hint-modal').classList.add('hidden');
+        }
+        
+        // Next chapter function
+       function nextChapter() {
+    window.location.href = "Game2.html";
+        }
+    </script>
+</body>
+</html>

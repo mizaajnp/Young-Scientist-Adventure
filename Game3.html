@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: Toxic Gas Corridor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .drag-item {
+            transition: all 0.3s ease;
+        }
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+        .drop-zone {
+            min-height: 80px;
+            transition: all 0.3s ease;
+        }
+        .drop-zone.highlight {
+            background-color: rgba(74, 222, 128, 0.3);
+            border-color: #4ade80;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .timer-progress {
+            transition: width 1s linear;
+        }
+        .gas-animation {
+            animation: gasFlow 8s infinite linear;
+        }
+        @keyframes gasFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Chapter Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-green-400 mb-2">CHAPTER 3: TOXIC GAS CORRIDOR</h1>
+            <p class="text-lg text-gray-300">Filter the toxic gas to proceed safely</p>
+        </div>
+
+        <!-- Game Scenario -->
+        <div class="bg-gray-800 rounded-xl p-6 mb-8 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-green-900/20 to-purple-900/20 gas-animation opacity-30"></div>
+            <div class="relative z-10">
+                <div class="flex items-center mb-6">
+                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-radiation text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold">Danger: Toxic Gas Detected!</h2>
+                        <p class="text-gray-300">The corridor is filled with poisonous gas. You must activate the filtration system.</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-700 rounded-lg p-4 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium">Filtration System Status</h3>
+                        <span class="px-3 py-1 bg-red-500 rounded-full text-xs">INACTIVE</span>
+                    </div>
+                    <div class="h-4 bg-gray-600 rounded-full overflow-hidden">
+                        <div class="h-full bg-green-500 timer-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm text-gray-400 mt-2">System requires correct chemical reaction to produce oxygen</p>
+                </div>
+
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <h3 class="font-medium mb-3">Mission Briefing</h3>
+                    <p class="mb-3">The filtration machine needs to decompose hydrogen peroxide (H₂O₂) to produce breathable oxygen (O₂).</p>
+                    <p class="mb-3">Assemble the correct chemical equation by dragging the elements below:</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div class="bg-gray-800 rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-center mb-6 text-green-400">CHEMICAL REACTION QUIZ</h2>
+            
+            <!-- Timer -->
+            <div class="flex items-center justify-center mb-8">
+                <div class="text-center">
+                    <div class="text-3xl font-mono mb-1" id="timer">01:40</div>
+                    <div class="text-sm text-gray-400">Time remaining</div>
+                </div>
+            </div>
+            
+            <!-- Drop Zones -->
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-gray-700 rounded-lg p-4 text-center">
+                    <h3 class="font-medium mb-2">Reactants</h3>
+                    <div class="drop-zone border-2 border-dashed border-gray-500 rounded p-4" id="reactants-zone"></div>
+                </div>
+                <div class="flex items-center justify-center">
+                    <div class="text-4xl text-gray-400">→</div>
+                </div>
+                <div class="bg-gray-700 rounded-lg p-4 text-center">
+                    <h3 class="font-medium mb-2">Products</h3>
+                    <div class="drop-zone border-2 border-dashed border-gray-500 rounded p-4" id="products-zone"></div>
+                </div>
+            </div>
+            
+            <!-- Drag Items -->
+            <div class="bg-gray-700 rounded-lg p-4">
+                <h3 class="font-medium mb-3">Available Components</h3>
+                <div class="flex flex-wrap gap-3" id="drag-items">
+                    <!-- These will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="flex justify-center mt-8 gap-4">
+                <button id="check-btn" class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium flex items-center">
+                    <i class="fas fa-check mr-2"></i> Check Solution
+                </button>
+                <button id="reset-btn" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-medium flex items-center">
+                    <i class="fas fa-redo mr-2"></i> Reset
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results Modal -->
+        <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+            <div class="bg-gray-800 rounded-xl p-8 max-w-md w-full relative overflow-hidden">
+                <div id="success-result" class="hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-green-500 rounded-full transform translate-x-16 -translate-y-16 opacity-20"></div>
+                    <div class="relative z-10">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-check text-3xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Success!</h2>
+                            <p class="text-gray-300">Correct reaction: 2H₂O₂ → 2H₂O + O₂</p>
+                        </div>
+                        <p class="mb-6 text-center">The filtration system is now producing oxygen. You can safely proceed through the corridor.</p>
+                        <button id="next-chapter" class="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-medium">
+                            Continue to Next Chapter
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="fail-result" class="hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-500 rounded-full transform translate-x-16 -translate-y-16 opacity-20"></div>
+                    <div class="relative z-10">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-times text-3xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Incorrect!</h2>
+                            <p class="text-gray-300">The reaction you created is not correct.</p>
+                        </div>
+                        <p class="mb-6 text-center">The correct reaction is: 2H₂O₂ → 2H₂O + O₂</p>
+                        <button id="try-again" class="w-full py-3 bg-red-600 hover:bg-red-700 rounded-lg font-medium">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game elements
+            const dragItemsContainer = document.getElementById('drag-items');
+            const reactantsZone = document.getElementById('reactants-zone');
+            const productsZone = document.getElementById('products-zone');
+            const checkBtn = document.getElementById('check-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const resultModal = document.getElementById('result-modal');
+            const successResult = document.getElementById('success-result');
+            const failResult = document.getElementById('fail-result');
+            const nextChapterBtn = document.getElementById('next-chapter');
+            const tryAgainBtn = document.getElementById('try-again');
+            const timerElement = document.getElementById('timer');
+            const timerProgress = document.querySelector('.timer-progress');
+            
+            // Correct answer
+            const correctAnswer = {
+                reactants: ['2H₂O₂'],
+                products: ['2H₂O', 'O₂']
+            };
+            
+            // Timer variables
+            let timeLeft = 1* 60; // 100 minutes in seconds
+            let timerInterval;
+            
+            // Available components
+            const components = [
+                'H₂O₂', '2H₂O₂', 'H₂O', '2H₂O', 'O₂', '2O₂',
+                'H₂', 'OH', 'H₂O₂O', 'HO₂', 'H₂O₃'
+            ];
+            
+            // Initialize the game
+            function initGame() {
+                // Clear previous items
+                dragItemsContainer.innerHTML = '';
+                reactantsZone.innerHTML = '';
+                productsZone.innerHTML = '';
+                
+                // Create drag items
+                components.forEach(comp => {
+                    const item = document.createElement('div');
+                    item.className = 'drag-item px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg cursor-move font-mono select-none';
+                    item.textContent = comp;
+                    item.draggable = true;
+                    item.dataset.value = comp;
+                    
+                    item.addEventListener('dragstart', dragStart);
+                    
+                    dragItemsContainer.appendChild(item);
+                });
+                
+                // Set up drop zones
+                [reactantsZone, productsZone].forEach(zone => {
+                    zone.addEventListener('dragover', dragOver);
+                    zone.addEventListener('dragleave', dragLeave);
+                    zone.addEventListener('drop', drop);
+                });
+                
+                // Start timer
+                startTimer();
+                
+                // Set up buttons
+                checkBtn.addEventListener('click', checkSolution);
+                resetBtn.addEventListener('click', resetGame);
+                nextChapterBtn.addEventListener('click', () => alert('Proceeding to next chapter...'));
+                tryAgainBtn.addEventListener('click', () => {
+                    resultModal.classList.add('hidden');
+                    resetGame();
+                });
+            }
+            
+            // Timer functions
+            function startTimer() {
+                updateTimerDisplay();
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    // Update progress bar (reverse since we're counting down)
+                    const progressPercent = (timeLeft / (100 * 60)) * 100;
+                    timerProgress.style.width = `${progressPercent}%`;
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        // Time's up logic
+                        showResult(false);
+                    }
+                }, 1000);
+            }
+            
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Change color when time is running low
+                if (timeLeft < 30) {
+                    timerElement.classList.add('text-red-500');
+                } else {
+                    timerElement.classList.remove('text-red-500');
+                }
+            }
+            
+            // Drag and drop functions
+            let draggedItem = null;
+            
+            function dragStart(e) {
+                draggedItem = e.target;
+                e.target.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', e.target.dataset.value);
+                e.dataTransfer.effectAllowed = 'move';
+                
+                // Create floating particle effect
+                createParticles(e.target);
+            }
+            
+            function dragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                e.target.classList.add('highlight');
+            }
+            
+            function dragLeave(e) {
+                e.target.classList.remove('highlight');
+            }
+            
+            function drop(e) {
+                e.preventDefault();
+                e.target.classList.remove('highlight');
+                
+                // Don't allow dropping back in the drag items container
+                if (e.target === dragItemsContainer) return;
+                
+                // Clone the dragged item
+                const newItem = draggedItem.cloneNode(true);
+                newItem.classList.remove('dragging');
+                newItem.addEventListener('dragstart', dragStart);
+                
+                // Add to drop zone
+                e.target.appendChild(newItem);
+                
+                // Remove from original position if not in drag items container
+                if (draggedItem.parentElement === dragItemsContainer) {
+                    draggedItem.remove();
+                }
+                
+                // Reset dragged item
+                draggedItem.classList.remove('dragging');
+                draggedItem = null;
+            }
+            
+            // Particle effect for drag
+            function createParticles(element) {
+                const rect = element.getBoundingClientRect();
+                const colors = ['#4ade80', '#60a5fa', '#fbbf24', '#f472b6'];
+                
+                for (let i = 0; i < 8; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    const size = Math.random() * 10 + 5;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.backgroundColor = color;
+                    
+                    const x = rect.left + Math.random() * rect.width;
+                    const y = rect.top + Math.random() * rect.height;
+                    
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    
+                    document.body.appendChild(particle);
+                    
+                    // Animate particle
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 50 + 30;
+                    
+                    const animation = particle.animate([
+                        { 
+                            transform: `translate(0, 0) rotate(0deg)`,
+                            opacity: 1 
+                        },
+                        { 
+                            transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) rotate(${Math.random() * 360}deg)`,
+                            opacity: 0 
+                        }
+                    ], {
+                        duration: Math.random() * 1000 + 500,
+                        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                    });
+                    
+                    animation.onfinish = () => particle.remove();
+                }
+            }
+            
+            // Game logic
+            function checkSolution() {
+                // Get current reactants and products
+                const currentReactants = Array.from(reactantsZone.children).map(el => el.dataset.value);
+                const currentProducts = Array.from(productsZone.children).map(el => el.dataset.value);
+                
+                // Check if correct
+                const isCorrect = 
+                    arraysEqual(currentReactants, correctAnswer.reactants) && 
+                    arraysEqual(currentProducts, correctAnswer.products);
+                
+                showResult(isCorrect);
+            }
+            
+            function arraysEqual(a, b) {
+                if (a.length !== b.length) return false;
+                
+                const aSorted = [...a].sort();
+                const bSorted = [...b].sort();
+                
+                return aSorted.every((val, i) => val === bSorted[i]);
+            }
+            
+            function showResult(isSuccess) {
+                clearInterval(timerInterval);
+                
+                if (isSuccess) {
+                    successResult.classList.remove('hidden');
+                    failResult.classList.add('hidden');
+                    
+                    // Animate success
+                    animateSuccess();
+                } else {
+                    successResult.classList.add('hidden');
+                    failResult.classList.remove('hidden');
+                }
+                
+                resultModal.classList.remove('hidden');
+            }
+            
+            function animateSuccess() {
+                // Animate the filtration system
+                const progressBar = document.querySelector('.timer-progress');
+                progressBar.classList.remove('bg-red-500');
+                progressBar.classList.add('bg-green-500');
+                
+                // Create floating bubbles effect (oxygen bubbles)
+                for (let i = 0; i < 20; i++) {
+                    createBubble();
+                }
+            }
+            
+            function createBubble() {
+                const bubble = document.createElement('div');
+                bubble.className = 'particle bg-blue-300 opacity-70';
+                
+                const size = Math.random() * 15 + 5;
+                const startX = Math.random() * window.innerWidth;
+                
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${startX}px`;
+                bubble.style.bottom = '0';
+                
+                document.body.appendChild(bubble);
+                
+                const animation = bubble.animate([
+                    { 
+                        transform: 'translateY(0) scale(1)',
+                        opacity: 0.7 
+                    },
+                    { 
+                        transform: `translateY(-${window.innerHeight + 100}px) scale(${Math.random() * 0.5 + 0.5})`,
+                        opacity: 0 
+                    }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    delay: Math.random() * 2000,
+                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                });
+                
+                animation.onfinish = () => bubble.remove();
+            }
+            
+            function resetGame() {
+                // Reset timer
+                timeLeft = 100 * 60;
+                startTimer();
+                
+                // Reset progress bar
+                timerProgress.classList.remove('bg-green-500');
+                timerProgress.classList.add('bg-red-500');
+                
+                // Reinitialize game
+                initGame();
+            }
+            
+            // Initialize the game
+            initGame();
+        });
+    </script>
+</body>
+</html>
